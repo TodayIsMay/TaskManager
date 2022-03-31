@@ -1,10 +1,9 @@
-package main;
+package managers;
 
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -28,20 +27,21 @@ public interface TaskManager {
 
     Task getTaskById(int id);
 
-    void updateEpic(Epic epic, int id);
+    String updateEpic(Epic epic, int id);
 
-    void updateSubtask(Subtask subtask, int id);
+    String updateSubtask(Subtask subtask, int id);
 
-    void updateTask(Task task, int id);
+    String updateTask(Task task, int id);
 
     void deleteAllTasks();
 
-    void deleteSubtask(int id);
+    String deleteSubtask(int id);
 
-    void deleteEpic(int id);
+    String deleteEpic(int id);
 
-    void deleteTask(int id);
+    String deleteTask(int id);
 
     List<Task> showHistory();
-}
 
+    boolean doesIntersect(Task targetTask);
+}

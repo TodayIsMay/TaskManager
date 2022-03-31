@@ -4,7 +4,6 @@ import tasks.Task;
 
 import java.util.*;
 
-
 public class InMemoryHistoryManager implements HistoryManager {
     private static final int HISTORY_LENGTH = 10;
     private final MyLinkedList<Task> listOfTasks = new MyLinkedList<>();
@@ -14,9 +13,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> node = new Node<>(task);
         Node<Task> newNode = listOfTasks.linkLast(node);
         if (listOfTasks.size() > HISTORY_LENGTH) {
-            List<Task> list = getHistory();
-            Task task1 = list.get(0);
-            remove(task1.getId());
+            remove(listOfTasks.getFirst().getData().getId());
         }
         if (!map.containsKey(task.getId())) {
             map.put(task.getId(), newNode);
@@ -52,6 +49,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         private Node<T> tail;
         private int size = 0;
 
+        public Node<T> getFirst() {
+            return head;
+        }
+
         public Node<T> linkLast(Node<T> node) {
             final Node<T> oldTail = tail;
             node.setPrev(tail);
@@ -67,7 +68,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             return node;
         }
 
-        //метод getTasks() убрала т.к. он, как мне кажется, оказался ненужным.
         public void removeNode(Node<T> node) {
             if (node.getPrev() != null) {
                 node.getPrev().setNext(node.getNext());

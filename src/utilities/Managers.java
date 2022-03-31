@@ -1,7 +1,7 @@
 package utilities;
 
 import main.InMemoryTaskManager;
-import main.TaskManager;
+import managers.TaskManager;
 
 public final class Managers {
     public static TaskManager getDefault() {

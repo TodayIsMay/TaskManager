@@ -1,29 +1,38 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private String epicDescription;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private String description;
     private List<Subtask> subtasks;
+    Duration duration;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
 
-    public Epic(String name, String epicDescription, int id, Status status) {
+    public Epic(String name, String description, int id, Status status, Duration duration, LocalDateTime startTime,
+                LocalDateTime endTime) {
         super(name, id, status);
-        this.epicDescription = epicDescription;
+        this.description = description;
+        this.subtasks = new ArrayList<>();
+        this.duration = duration;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public Epic(String name, String description, int id, Status status) {
+        super(name, id, status);
+        this.description = description;
         this.subtasks = new ArrayList<>();
     }
 
     public ArrayList<Subtask> getSubtasks() {
         ArrayList<Subtask> clone = new ArrayList<>(subtasks);
         return clone;
-    }
-
-    public void setEpicDescription(String epicDescription) {
-        this.epicDescription = epicDescription;
-    }
-
-    public String getEpicDescription() {
-        return epicDescription;
     }
 
     public void addSub(Subtask sub) {
@@ -40,7 +49,7 @@ public class Epic extends Task {
     }
 
     public void update(Epic epic) {
-        this.setEpicDescription(epic.getEpicDescription());
+        setDescription(epic.getDescription());
         this.setName(epic.getName());
     }
 
@@ -74,5 +83,56 @@ public class Epic extends Task {
             }
         }
         return status;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        LocalDateTime startTime = LocalDateTime.MAX;
+        for(Subtask subtask: subtasks) {
+            if(subtask.getStartTime().isBefore(startTime)) {
+                startTime = subtask.getStartTime();
+            }
+        }
+        this.startTime = startTime;
+        return startTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        LocalDateTime endTime = LocalDateTime.MIN;
+        for(Subtask subtask: subtasks) {
+            if(subtask.getEndTime().isAfter(endTime)) {
+                endTime = subtask.getEndTime();
+            }
+        }
+        this.endTime = endTime;
+        return endTime;
+    }
+
+    @Override
+    public long getDuration() {
+        this.duration = Duration.between(startTime, endTime);
+        return duration.toHours();
+    }
+
+    @Override
+    public String toString() {
+        if(startTime == null | endTime == null | duration == null) {
+            return this.getId() + "," + Type.EPIC + "," +
+                    this.getName() + "," + this.getStatus() + "," + this.getDescription() + "\n";
+        }else {
+            return this.getId() + "," + Type.EPIC + "," +
+                    this.getName() + "," + this.getStatus() + "," + this.getDescription() + "," +
+                    this.getDuration() + "," + this.getStartTime().format(formatter) + "," +
+                    this.getEndTime().format(formatter) + "\n";
+        }
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

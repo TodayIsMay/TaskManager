@@ -5,19 +5,27 @@ import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Creator {
-    private ArrayList<Integer> list = new ArrayList<>();
+    private int maxId;
     private Scanner scanner = new Scanner(System.in);
+    DateTimeFormatter startTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    public Creator(int maxId) {
+        this.maxId = maxId;
+    }
 
     public Epic createEpic() {
         System.out.println("Введите название эпика");
         String name = scanner.nextLine();
         System.out.println("Введите описание");
         String description = scanner.nextLine();
-        int epicID = generateId();
+        int epicID = generateID();
         Status status = Status.NEW;
         return new Epic(name, description, epicID, status);
     }
@@ -27,27 +35,39 @@ public class Creator {
         int belonging = Integer.parseInt(scanner.nextLine());
         System.out.println("Введите название подзадачи");
         String name = scanner.nextLine();
-        int ID = generateId();
+        int ID = generateID();
         Status status = Status.NEW;
-        return new Subtask(belonging, name, ID, status);
+        System.out.println("Введите предполагаемую продолжительность в часах");
+        Duration duration = Duration.ofHours(Long.parseLong(scanner.nextLine()));
+        LocalDateTime startTime = LocalDateTime.MIN;
+        try {
+            System.out.println("Введите время начала в формате 01.01.1970 00:00");
+            startTime = LocalDateTime.parse(scanner.nextLine(), startTimeFormatter);
+        }catch (DateTimeParseException e) {
+            System.out.println("Неверный формат времени и/или даты!");
+        }
+        return new Subtask(belonging, name, ID, status, duration, startTime);
     }
 
     public Task createTask() {
         System.out.println("Введите название задачи.");
         String name = scanner.nextLine();
-        int ID = generateId();
+        int ID = generateID();
         Status status = Status.NEW;
-        return new Task(name, ID, status);
+        System.out.println("Введите предполагаемую продолжительность в часах");
+        Duration duration = Duration.ofHours(Long.parseLong(scanner.nextLine()));
+        LocalDateTime startTime = LocalDateTime.MIN;
+        try {
+            System.out.println("Введите время начала в формате 01.01.1970 00:00");
+            startTime = LocalDateTime.parse(scanner.nextLine(), startTimeFormatter);
+        }catch (DateTimeParseException e) {
+            System.out.println("Неверный формат времени и/или даты!");
+        }
+        return new Task(name, ID, status, duration, startTime);
     }
 
-    public int generateId() {
-        int result = 1;
-        for (Integer number : list) {
-            if (number == result) {
-                result++;
-            }
-        }
-        list.add(result);
-        return result;
+    public int generateID() {
+        this.maxId++;
+        return maxId;
     }
 }
